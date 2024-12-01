@@ -32,7 +32,7 @@ Before you begin, ensure you have the following installed:
 
 1. Navigate to the project directory:
 ```bash
-cd lpd-compiler
+cd lpd-studio
 ```
 
 2. Install dependencies:
