@@ -18,7 +18,7 @@ import { FiUpload } from "react-icons/fi";
 import { LuFile, LuFilePlus, LuFolderOpen, LuDownload, LuHelpCircle } from "react-icons/lu";
 import { IoPlayOutline } from "react-icons/io5";
 import { useHotkeys } from 'react-hotkeys-hook';
-import { VirtualMachine } from "/Users/luisselber/Documents/react-code-editor-app-main/virtual_machine/VirtualMachine.js";
+import { VirtualMachine } from "../../virtual_machine/VirtualMachine.js";
 
 // import OutputTerminal from "../components/vm/OutputTerminal";
 
