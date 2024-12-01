@@ -65,8 +65,8 @@ npm run dev
 
 1. Write your LPD code in the editor or load an existing .lpd file
 2. Press "Compilar" to compile your code
-3. If compilation is successful, your code will be automatically loaded into the Virtual Machine
-4. Press "Executar" to run your program
+3. If compilation is successful, your code will be automatically saved into your device
+4. Open the virtual machine page and press "Executar" to run your program
 5. Follow any prompts for input and check the output terminal for results
 
 ## Keyboard Shortcuts
