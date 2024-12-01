@@ -44,8 +44,8 @@ const CodeViewer = () => {
     const sourceCode = editorRef.current?.getValue();
     if (!sourceCode) {
       toast({
-        title: 'No code to execute',
-        description: 'Please load or paste some code before executing.',
+        title: 'Nenhum código para executar',
+        description: 'Por favor carregue algum código .obj antes de executar.',
         status: 'warning',
         duration: 3000,
         isClosable: true,
