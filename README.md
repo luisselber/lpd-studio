@@ -46,6 +46,20 @@ cd backend
 npm install
 ```
 
+## Configuration
+The project includes two compiler executables to support different Windows architectures:
+- `compiler/compiler`: Default executable for Windows ARM machines
+- `compiler/windowsAMD/compiler`: Executable for Windows AMD machines
+
+### System-Specific Setup
+1. **Windows ARM Users**:
+   - No additional configuration needed - the default configuration will work out of the box
+
+2. **Windows AMD Users**:
+   - Open `backend/server.js`
+   - Locate line 25: `const compilerExecutable = '../compiler/compiler';`
+   - Change it to: `const compilerExecutable = '../compiler/windowsAMD/compiler';`
+
 ## Running the Application
 
 1. Start the backend server:
@@ -84,6 +98,6 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Acknowledgments
 
-- Original LPD language design by [Author]
-- Virtual Machine implementation based on [Reference]
+- Original LPD language design by Prof. Ricardo Freitas for the "Desenvolvimento de Compiladores" subject at PUC Campinas
+- Virtual Machine implementation based on [Kowaltowski,T. Implementação de Linguagens de Programação - Ed. Guanabara Dois.]
 - Built with React, Vite, and Chakra UI
