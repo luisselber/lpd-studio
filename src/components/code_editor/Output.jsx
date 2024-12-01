@@ -21,28 +21,54 @@ const Output = ({ editorRef }) => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  // Add keyboard shortcuts
+  // Keyboard shortcuts
   useHotkeys('f5', () => runCode());
   useHotkeys('mod+k', () => handleClearOutput());
   useHotkeys('f7', () => navigate('/vm'));
 
-  const downloadObjFile = (content) => {
-    const blob = new Blob([content], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = 'program.obj';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+  const downloadObjFile = (content, filename = 'program.obj') => {
+    try {
+      // Create blob with proper encoding
+      const blob = new Blob([content], { 
+        type: 'text/plain;charset=utf-8'
+      });
+      
+      // Create object URL
+      const url = window.URL.createObjectURL(blob);
+      
+      // Create temporary link element
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      
+      // Append to document, trigger click, and clean up
+      document.body.appendChild(link);
+      link.click();
+      
+      // Cleanup
+      setTimeout(() => {
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+      }, 100);
+
+    } catch (error) {
+      console.error('Error downloading file:', error);
+      toast({
+        title: 'Erro ao baixar arquivo',
+        description: 'Não foi possível baixar o arquivo objeto.',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      });
+    }
   };
 
   const runCode = async () => {
-    const sourceCode = editorRef.current.getValue();
-    if (!sourceCode) {
+    const sourceCode = editorRef.current?.getValue();
+    
+    if (!sourceCode?.trim()) {
       toast({
-        title: 'Nenhum código para compilar.',
+        title: 'Nenhum código para compilar',
         description: 'Por favor, forneça algum código antes de compilar.',
         status: 'warning',
         duration: 4000,
@@ -50,18 +76,23 @@ const Output = ({ editorRef }) => {
       });
       return;
     }
-    try {
-      setIsLoading(true);
-      const result = await executeCode(sourceCode);
-      const combinedOutput = (result.output || '') + (result.error || '');
-      setOutput(combinedOutput || 'Compilation completed with no output.');
 
-      // If compilation was successful and we have obj file content, download it
-      if (result.objFile && !result.error) {
+    setIsLoading(true);
+
+    try {
+      const result = await executeCode(sourceCode);
+      const combinedOutput = [result.output, result.error]
+        .filter(Boolean)
+        .join('\n');
+      
+      setOutput(combinedOutput || 'Compilação concluída sem output.');
+
+      // Handle successful compilation with object file
+      if (result.success && result.objFile) {
         downloadObjFile(result.objFile);
         toast({
           title: 'Código compilado com sucesso',
-          description: 'Código intermediário (program.obj) instalado com sucesso',
+          description: 'Código intermediário (program.obj) baixado com sucesso',
           status: 'success',
           duration: 3000,
           isClosable: true,
@@ -70,13 +101,13 @@ const Output = ({ editorRef }) => {
     } catch (error) {
       console.error('Error executing code:', error);
       toast({
-        title: 'An error occurred.',
-        description: 'Unable to run code.',
+        title: 'Erro na execução',
+        description: 'Não foi possível executar o código.',
         status: 'error',
         duration: 6000,
         isClosable: true,
       });
-      setOutput('Failed to execute code.');
+      setOutput('Falha ao executar o código.');
     } finally {
       setIsLoading(false);
     }
@@ -100,15 +131,11 @@ const Output = ({ editorRef }) => {
       return 'Pressione "Compilar" para ver o output aqui';
     }
 
-    const lines = output.split('\n');
-    return lines.map((line, index) => {
-      const errorRegex = /ERRO: (.*?) -- linha: (\d+)/;
-      const match = line.match(errorRegex);
+    return output.split('\n').map((line, index) => {
+      const errorMatch = line.match(/ERRO: (.*?) -- linha: (\d+)/);
 
-      if (match) {
-        const errorMessage = match[1];
-        const lineNumber = parseInt(match[2], 10);
-
+      if (errorMatch) {
+        const [, errorMessage, lineNumber] = errorMatch;
         return (
           <Text key={index} color="red.500">
             ERRO: {errorMessage} --{' '}
@@ -117,15 +144,14 @@ const Output = ({ editorRef }) => {
               color="blue.500"
               cursor="pointer"
               textDecoration="underline"
-              onClick={() => handleLineClick(lineNumber)}
+              onClick={() => handleLineClick(parseInt(lineNumber, 10))}
             >
               linha: {lineNumber}
             </Text>
           </Text>
         );
-      } else {
-        return <Text key={index}>{line}</Text>;
       }
+      return <Text key={index}>{line}</Text>;
     });
   };
 
@@ -139,9 +165,15 @@ const Output = ({ editorRef }) => {
           Compilação
         </MenuButton>
         <MenuList>
-          <MenuItem icon={<LuFileDigit />} command='F5' onClick={runCode}>Compilar</MenuItem>
-          <MenuItem icon={<GrClearOption />} onClick={handleClearOutput} command='⌘K'>Limpar Output</MenuItem>
-          <MenuItem icon={<GrVirtualMachine />} onClick={() => navigate("/vm")} command='F7'>Máquina Virtual</MenuItem>
+          <MenuItem icon={<LuFileDigit />} command='F5' onClick={runCode}>
+            Compilar
+          </MenuItem>
+          <MenuItem icon={<GrClearOption />} onClick={handleClearOutput} command='⌘K'>
+            Limpar Output
+          </MenuItem>
+          <MenuItem icon={<GrVirtualMachine />} onClick={() => navigate("/vm")} command='F7'>
+            Máquina Virtual
+          </MenuItem>
         </MenuList>
       </Menu>
       <Box
