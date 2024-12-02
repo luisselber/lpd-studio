@@ -83,15 +83,6 @@ npm run dev
 4. Open the virtual machine page and press "Executar" to run your program
 5. Follow any prompts for input and check the output terminal for results
 
-## Keyboard Shortcuts
-
-- `F5`: Execute code
-- `Ctrl+Alt+N`: New file
-- `Cmd+Alt+O`: Open file
-- `Cmd+Alt+S`: Save file
-- `Cmd+K`: Clear output
-- `Ctrl+Alt+H`: Open documentation
-
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
