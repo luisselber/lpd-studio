@@ -3,7 +3,7 @@ export class VirtualMachine {
   constructor() {
     this.commands = [];
     this.nullMarks = [];
-    this.memory = new Array(100).fill('');
+    this.memory = new Array(2000).fill('');
     this.p = 0;
     this.s = -1;
     this.outputBuffer = [];
